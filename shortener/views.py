@@ -52,6 +52,37 @@ class RetrieveOrignalURL(APIView):
             return Response({'error': 'Short URL not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
+class UpdateShortURL(APIView):
+    def put(self, request, code):
+        try:
+            entry = ShortURL.objects.get(short_code=code)
+        except ShortURL.DoesNotExist:
+            return Response({'error': 'Short URL not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        new_url = request.data.get('url')
+
+        if not new_url:
+            return Response({'error': 'URL is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        entry.url = new_url
+        entry.save()
+
+        serializer = ShortURLSerializer(entry)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+class DeleteShortURL(APIView):
+    def delete(self, request, code):
+        try:
+            entry = ShortURL.objects.get(short_code=code)
+            entry.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except ShortURL.DoesNotExist:
+            return Response({'error': 'Short URL not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+
 
 
 def homepage(request):
