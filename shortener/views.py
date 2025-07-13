@@ -39,6 +39,19 @@ class CreateShortURL(APIView):
 
 # ✅ Homepage view
 
+class RetrieveOrignalURL(APIView):
+    def get(self, request, code):
+        try:
+            entry = ShortURL.objects.get(short_code=code)
+            entry.access_count += 1
+            entry.save()
+            
+            serializer = ShortURLSerializer(entry)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except ShortURL.DoesNotExist:
+            return Response({'error': 'Short URL not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
 
 
 def homepage(request):
