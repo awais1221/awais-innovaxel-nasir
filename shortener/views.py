@@ -83,6 +83,18 @@ class DeleteShortURL(APIView):
 
 
 
+class URLStats(APIView):
+    def get(self, request, code):
+        try:
+            entry = ShortURL.objects.get(short_code=code)
+            return Response({
+                'short_code': entry.short_code,
+                'access_count': entry.access_count
+            }, status=status.HTTP_200_OK)
+        except ShortURL.DoesNotExist:
+            return Response({'error': 'Short URL not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
 
 
 def homepage(request):
